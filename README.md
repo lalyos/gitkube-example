@@ -55,7 +55,10 @@ I run in to various issues:
 
 So once you have a valid dockerconfig.json you can update the secret:
 ```
-kubectl create secret generic <remotename>-regsecret --from-file=.dockerconfigjson --dry-run -o yaml| kubectl apply -f -
+kubectl create secret generic <remotename>-regsecret \
+  --from-file=.dockerconfigjson \
+  --dry-run -o yaml \
+  | kubectl apply -f -
 ```
 
 That will update only the secret. To get it effective, you have to trigger the generation of the ConfigMap `gitkube-ci-conf` in the kube-system napespace. Which acts as a DB for all repositories.
@@ -80,7 +83,10 @@ kubectl exec -it  -n kube-system $(kubectl get po -n kube-system -l app=gitkubed
 
 You can exec into the container, which receives the git push on the k8s side:
 ```
-$ kubectl exec -it  -n kube-system $(kubectl get po -n kube-system -l app=gitkubed -o jsonpath='{.items[0].metadata.name}') -- bash
+$ kubectl exec -it  \
+   -n kube-system \
+   $(kubectl get po -n kube-system -l app=gitkubed -o jsonpath='{.items[0].metadata.name}') \
+   -- bash
 
 # check the files
 $ cd /home/yourproject
@@ -91,12 +97,16 @@ $ jq . /home/<namespace-remote>/.docker/config.json
 
 checking gitkubed's logs:
 ```
-kubectl logs -n kube-system $(kubectl get po -n kube-system -l app=gitkubed -o jsonpath='{.items[0].metadata.name}')
+kubectl logs \
+  -n kube-system \
+  $(kubectl get po -n kube-system -l app=gitkubed -o jsonpath='{.items[0].metadata.name}')
 ```
 
 see the controller's log:
 ```
-kubectl logs  -n kube-system $(kubectl get po -n kube-system -l app=gitkube-controller -o jsonpath='{.items[0].metadata.name}') 
+kubectl logs \
+  -n kube-system \
+  $(kubectl get po -n kube-system -l app=gitkube-controller -o jsonpath='{.items[0].metadata.name}') 
 ```
 
 sometimes ypu just need a new commit to be able to test the process:
